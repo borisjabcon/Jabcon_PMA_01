@@ -1,48 +1,70 @@
 import { StatusBar } from 'expo-status-bar';
-import {v4 as uuid} from 'uuid';
+import { Button ,Pressable, StyleSheet, Text, View, TextInput , FlatList} from 'react-native';
 import { useState } from 'react';
-import {StyleSheet, Text,  View } from 'react-native';
+import Item from './src/components/Item';
 
 export default function App() {
-
-//uchovam tasky a zobrazim
+  const [inputText, setInputText] = useState("");
   const [taskList, setTaskList] = useState([]);
-
-  function addTaskHandler() {
-    const newId = uuid();
-    //console.log(newId);
-    setTaskList((prevTask) => [...prevTask, { id: newId, text: taskText }]);
-    setTaskText("");
+  function inputTextHandler(text) {
+    setInputText(text);
   }
+  function addTextHandler() {
+    let id = "id" + Math.random().toString(16).slice(2);
+    setTaskList((currentTaskList) => [...currentTaskList, { id: id, value: inputText, done: false}]);
+  }
+  console.log(taskList);
 
+  function handleDoneTask(itemId) {
   return (
-    <View style={styles.appContainer}>
-      <View style={styles.taskContainer}>
-        {taskList.map((task) => (
-          <View style={styles.taskItem} key={task.id}>
-            <Text>{task.id}: {task.text} </Text>
-          </View>
-        ))}
+    <View style={styles.container}>
+      <View style={styles.inputContainer}>
+      <TextInput 
+        style={styles.input} 
+        placeholder="Zadajte ulohu" 
+        onChangeText={setInputText}
+      />
+      <Button onPress={addTextHandler} title="ADD" />
       </View>
+      <FlatList
+        data={taskList}
+        renderItem={({item}) => <Item item={item} handleDone={handleDoneTask} />}
+        keyExtractor={item => item.id}
+      />
       <StatusBar style="auto" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  appContainer: {
+  inputContainer: 
+  {
+    flex: 1, 
+    alignItems: "center", 
+    justifyContent: 'center', 
+    flexDirection: "row",
+    paddingHorizontal: 12,
+  },
+    taskContainer: 
+    {
+      backgroundColor: '',
+      flex: 4, 
+      borderTopWidth: 3, 
+      padding: 24, 
+    },
+    container: {
     flex: 1,
   },
-  taskContainer: {
-    flex: 3,
-    borderTopWidth: 5,
-    borderTopColor: "#fb9200ff",
-    padding: 20,
+  input: {
+    borderColor: 'gray',
+    borderWidth: 3,
+    borderRadius: 8,
+    width: "80%",
   },
   taskItem: {
-    margin: 10,
-    padding: 8,
-    backgroundColor: "#fb9200ff",
-    borderRadius: 5,
-  }
-});
+    backgroundColor: 'white',
+    padding: 12,
+    margin :8,
+    borderRadius: 8,
+  },
+})}
